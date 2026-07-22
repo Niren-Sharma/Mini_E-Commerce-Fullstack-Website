@@ -16,7 +16,7 @@ function App(){
 
   const addToCart = (product) => {
     setCart((prevCart) => {
-      // Check karenge ki product pehle se cart mein hai ya nahi
+
       const existingItem = prevCart.find(item => item._id === product._id);
       
       if (existingItem) {
