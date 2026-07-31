@@ -232,9 +232,8 @@ This project demonstrates practical implementation of:
 
 ---
 
-# 👨‍💻 Author
+# 👨‍💻 By Niren Sharma
 
-**Niren Sharma**
 
 - 💻 GitHub: https://github.com/Niren-Sharma
 - 💼 LinkedIn: https://www.linkedin.com/in/niren-sharma/
