@@ -119,15 +119,17 @@ POST   /api/orders
 
 # 📂 Project Structure
 
+# 📂 Project Structure
+
 ```text
-Mini-E-Commerce/
+Mini_E-Commerce-Fullstack-Website/
 │
 ├── backend/
 │   ├── config/
 │   │   └── db.js
 │   ├── models/
-│   │   ├── Product.js
 │   │   ├── Order.js
+│   │   ├── Product.js
 │   │   └── User.js
 │   ├── routes/
 │   │   ├── authRoutes.js
@@ -142,22 +144,17 @@ Mini-E-Commerce/
 │   ├── public/
 │   ├── src/
 │   │   ├── components/
-│   │   │   ├── Admin.jsx
-│   │   │   ├── Auth.jsx
-│   │   │   ├── Cart.jsx
-│   │   │   ├── Checkout.jsx
-│   │   │   ├── Navbar.jsx
-│   │   │   ├── ProductCard.jsx
-│   │   │   └── ProductList.jsx
 │   │   ├── services/
 │   │   │   └── api.js
 │   │   ├── App.js
 │   │   └── App.css
 │   ├── .gitignore
-│   └── package.json
+│   ├── package.json
+│   └── README.md
 │
 ├── .gitignore
 ├── package.json
+├── package-lock.json
 └── README.md
 ```
 
