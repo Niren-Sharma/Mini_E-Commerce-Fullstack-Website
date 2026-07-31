@@ -3,6 +3,7 @@ import API from "../services/api";
 
 function Admin({ refreshProducts }) {
     const [products, setProducts] = useState([]);
+    const [orders, setOrders] = useState([]); // Capstone 4 analytics ke liye
     const [product, setProduct] = useState({
         name: "",
         price: "",
@@ -12,18 +13,27 @@ function Admin({ refreshProducts }) {
         stock: ""
     });
 
-    const fetchProducts = async () => {
+    const fetchData = async () => {
         try {
-            const response = await API.get("/products");
-            setProducts(response.data);
+            const prodRes = await API.get("/products");
+            setProducts(prodRes.data);
+
+            // Fetch orders for revenue & dashboard analytics
+            const orderRes = await API.get("/orders");
+            setOrders(orderRes.data);
         } catch (error) {
-            console.error("Error fetching products:", error);
+            console.error("Error fetching admin data:", error);
         }
     };
 
     useEffect(() => {
-        fetchProducts();
+        fetchData();
     }, []);
+
+    // Analytics Calculations
+    const totalRevenue = orders.reduce((sum, item) => sum + (item.totalAmount || 0), 0);
+    const totalOrdersCount = orders.length;
+    const totalProducts = products.length;
 
     const handleChange = (e) => {
         setProduct({
@@ -53,7 +63,7 @@ function Admin({ refreshProducts }) {
                 stock: ""
             });
             
-            fetchProducts();
+            fetchData();
             refreshProducts();
         } catch (error) {
             console.error("Error adding product:", error);
@@ -65,7 +75,7 @@ function Admin({ refreshProducts }) {
         if (window.confirm("Are you sure you want to delete this product?")) {
             try {
                 await API.delete("/products/" + id);
-                fetchProducts();
+                fetchData();
                 refreshProducts();
             } catch (error) {
                 console.error("Error deleting product:", error);
@@ -75,6 +85,30 @@ function Admin({ refreshProducts }) {
 
     return (
         <div className="admin">
+            {/* CAPSTONE 4: DASHBOARD ANALYTICS CARDS */}
+            <h2>Dashboard Analytics 📈</h2>
+            <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+                gap: '12px',
+                marginBottom: '24px'
+            }}>
+                <div style={{ background: '#f8fafc', padding: '12px', borderRadius: '8px', border: '1px solid #e2e8f0', textAlign: 'center' }}>
+                    <span style={{ fontSize: '11px', color: '#64748b', fontWeight: '700' }}>TOTAL REVENUE</span>
+                    <h3 style={{ fontSize: '18px', color: '#15803d', marginTop: '4px' }}>₹{totalRevenue.toLocaleString('en-IN')}</h3>
+                </div>
+                <div style={{ background: '#f8fafc', padding: '12px', borderRadius: '8px', border: '1px solid #e2e8f0', textAlign: 'center' }}>
+                    <span style={{ fontSize: '11px', color: '#64748b', fontWeight: '700' }}>TOTAL ORDERS</span>
+                    <h3 style={{ fontSize: '18px', color: '#0f1712', marginTop: '4px' }}>{totalOrdersCount}</h3>
+                </div>
+                <div style={{ background: '#f8fafc', padding: '12px', borderRadius: '8px', border: '1px solid #e2e8f0', textAlign: 'center' }}>
+                    <span style={{ fontSize: '11px', color: '#64748b', fontWeight: '700' }}>ACTIVE PRODUCTS</span>
+                    <h3 style={{ fontSize: '18px', color: '#c6925e', marginTop: '4px' }}>{totalProducts}</h3>
+                </div>
+            </div>
+
+            <hr style={{ margin: '25px 0', borderColor: '#f1f5f9' }} />
+
             <h2>Add New Product</h2>
             <form onSubmit={addProduct}>
                 <input name="name" placeholder="Product Name"

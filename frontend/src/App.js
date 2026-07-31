@@ -3,22 +3,42 @@ import Navbar from './components/Navbar';
 import ProductList from './components/ProductList';
 import Cart from './components/Cart';
 import Checkout from './components/Checkout';
-import {use ,useState} from 'react';
 import Admin from './components/Admin';
+import Auth from './components/Auth';
+import { useState, useEffect } from 'react'; 
 
+function App() {
+  const [refresh, setRefresh] = useState(false);
+  const [cart, setCart] = useState([]);
+  const [activeTab, setActiveTab] = useState('shop');
+  const [user, setUser] = useState(null);
 
-function App(){
-  const [refresh , setRefresh] = useState(false);
-  const [cart,setCart]= useState([]);
+  useEffect(() => {
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      try {
+        setUser(JSON.parse(savedUser));
+      } catch (e) {
+        localStorage.removeItem('user');
+      }
+    }
+  }, []);
 
-  const[activeTab,setActiveTab] = useState('shop');
+  const handleLoginSuccess = (userData) => {
+    setUser(userData);
+    setActiveTab('shop');
+  };
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setUser(null);
+    setActiveTab('shop');
+  };
 
   const addToCart = (product) => {
     setCart((prevCart) => {
-
       const existingItem = prevCart.find(item => item._id === product._id);
-      
       if (existingItem) {
         return prevCart.map(item =>
           item._id === product._id
@@ -33,7 +53,6 @@ function App(){
   const removeFromCart = (index) => {
     const copy = [...cart];
     const item = copy[index];
-    
     if (item.quantity > 1) {
       item.quantity -= 1;
       setCart(copy);
@@ -43,35 +62,45 @@ function App(){
     }
   };
 
-  const clearCart = ()=> {
+  const clearCart = () => {
     setCart([]);
   };
 
-  const refreshProducts = ()=>{
+  const refreshProducts = () => {
     setRefresh(!refresh);
     window.location.reload();
   };
 
-return(
+  return (
     <div className="app-container">
-      <Navbar cartCount={cart.length}
-       activeTab={activeTab}
-       setActiveTab={setActiveTab} />
-       {activeTab === 'admin' && (
-      <Admin refreshProducts={refreshProducts}/>
+      <Navbar 
+        cartCount={cart.length}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab} 
+        user={user}
+        onLogout={handleLogout}
+      />
+
+      {activeTab === 'auth' && (
+        <Auth onLoginSuccess={handleLoginSuccess} />
+      )}
+
+      {activeTab === 'admin' && user?.role === 'admin' && (
+        <Admin refreshProducts={refreshProducts} />
       )}
 
       {activeTab === 'shop' && (
-      <ProductList addToCart={addToCart} refresh={refresh}/>
+        <ProductList addToCart={addToCart} refresh={refresh} />
       )}
 
-    {activeTab === 'cart' && (
-    <div className="cartcheckout">
-      <Cart cart={cart} removeFromCart={removeFromCart}/>
-      {cart.length > 0 &&<Checkout cart={cart} clearCart={clearCart}/>}
+      {activeTab === 'cart' && (
+        <div className="cartcheckout">
+          <Cart cart={cart} removeFromCart={removeFromCart} />
+          {cart.length > 0 && <Checkout cart={cart} clearCart={clearCart} />}
+        </div>
+      )}
     </div>
-    )}
-  </div>
   );
 }
+
 export default App;
